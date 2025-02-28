@@ -1,10 +1,40 @@
-.classpath
+### IntelliJ IDEA ###
 .idea
-.project
-.settings
-build
-dist
-target
 *.iml
 *.ipr
 *.iws
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+## Gradle
+build
+dist
+
+## Maven
+target
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
