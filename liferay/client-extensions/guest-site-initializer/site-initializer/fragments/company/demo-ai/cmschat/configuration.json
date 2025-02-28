@@ -1,0 +1,36 @@
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"dataType": "string",
+					"defaultValue": "",
+					"label": "User Agent ERC",
+					"name": "userAgentERC",
+					"type": "text"
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "http",
+					"label": "protocol",
+					"name": "protocol",
+					"type": "text"
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "localhost",
+					"label": "host-name",
+					"name": "hostname",
+					"type": "text"
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "9090",
+					"label": "port",
+					"name": "port",
+					"type": "text"
+				}
+			]
+		}
+	]
+}

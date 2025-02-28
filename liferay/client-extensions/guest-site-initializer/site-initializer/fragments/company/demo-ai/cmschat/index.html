@@ -1,0 +1,117 @@
+<div class="cmschat">
+    <img class="busy-icon-template" src="[resources:liferay-icon-white-boxes]" style="display:none;">
+    <div id="chatWindow"
+        style="display: flex; flex-direction: column;">
+        <!-- Chat messages will appear here -->
+    </div>
+    <form id="chatForm" style="margin-top: 10px;">
+        <div class="mb-3">
+            <input type="text" id="chatInput" class="form-control" placeholder="Type a message..." autocomplete="off">
+        </div>
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+</div>
+
+<script>
+    const oauth2Client = Liferay.OAuth2Client.FromUserAgentApplication('${configuration.userAgentERC}');
+
+    document.getElementById('chatForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var chatInput = document.getElementById('chatInput');
+
+        if (chatInput.value.trim() !== '') {
+            var chatWindow = document.getElementById('chatWindow');
+            addUserMessage(chatWindow, chatInput.value);
+            chatInput.value = '';
+            addBusyCursor(chatWindow);
+
+            const url = `${configuration.protocol}://${configuration.hostname}:${configuration.port}/cmschat/completions`;
+
+            oauth2Client
+                .fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        messages: Array.from(chatWindow.children)
+                            .filter(child => !child.classList.contains('busy'))
+                            .map(child => child.textContent),
+                        roles: Array.from(chatWindow.children)
+                            .filter(child => !child.classList.contains('busy'))
+                            .map(child => child.classList.contains('assistant') ? 'assistant' : 'user')
+                    }),
+                })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error("Network response was not ok");
+                    }
+                })
+                .then((data) => {
+                    removeBusyCursor(chatWindow);
+                    console.log("Response from server:", data);
+                    if (data.assistant) {
+                        addAssistantMessage(chatWindow, data.assistant);
+                    }
+                })
+                .catch((error) => {
+                    console.error("There was a problem with the fetch operation:", error);
+                });
+        }
+    });
+    function typeWriter(element, text, speed) {
+        let i = 0;
+
+        function typeEffect() {
+            if (i < text.length) {
+                // Update the element's innerHTML with a slice of the text
+                element.innerHTML = text.slice(0, i + 1);
+                i++;
+                setTimeout(typeEffect, speed); // Call again after the specified speed
+            }
+        }
+
+        typeEffect(); // Start the typing effect
+    }
+
+    function addUserMessage(chatWindow, text) {
+        var message = document.createElement('div');
+        message.classList.add('chat-bubble', 'user');
+        message.textContent = chatInput.value;
+        chatWindow.appendChild(message);;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function addAssistantMessage(chatWindow, text) {
+        var message = document.createElement('div');
+        message.classList.add('chat-bubble', 'assistant');
+        message.innerHTML = '';
+        chatWindow.appendChild(message);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+
+        typeWriter(message, text, 0);
+    }
+
+    function addBusyCursor(chatWindow) {
+        var message = document.createElement('div');
+        var img = document.createElement('img');
+        img.src = document.querySelector('.busy-icon-template').src;
+        img.classList.add("busy-icon");
+        message.classList.add('chat-bubble', 'assistant', 'busy');
+        message.innerHTML = '';
+        message.appendChild(img)
+        chatWindow.appendChild(message);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    } 
+    
+    function removeBusyCursor(chatWindow) {
+        var chatWindow = document.getElementById('chatWindow');
+        var busyMessages = chatWindow.querySelectorAll('.busy');
+        busyMessages.forEach(busyMessage => {
+            chatWindow.removeChild(busyMessage);
+        });
+    }
+</script>
