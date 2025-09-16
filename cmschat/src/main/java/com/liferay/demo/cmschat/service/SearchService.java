@@ -28,5 +28,9 @@ import com.liferay.demo.cmschat.dto.SearchResult;
  */
 public interface SearchService {
 
-	public List<SearchResult> getSearchResults(Jwt jwt, String keywords) throws IOException;
-}
+	public List<SearchResult> getSearchResults( 
+							Jwt jwt,
+							String keywords,
+							String blueprintExternalReferenceCode,
+							String scope) throws IOException;
+					}

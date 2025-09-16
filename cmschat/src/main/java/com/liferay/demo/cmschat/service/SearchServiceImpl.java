@@ -17,6 +17,7 @@ package com.liferay.demo.cmschat.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -27,7 +28,11 @@ import java.util.Map;
 
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
-
+import org.apache.tika.exception.WriteLimitReachedException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.sax.BodyContentHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpEntity;
@@ -49,6 +54,8 @@ import com.liferay.demo.cmschat.dto.SearchResult;
 import com.liferay.demo.cmschat.http.HttpResponseFactory;
 import com.liferay.demo.cmschat.http.LiferayHttpRequestFactory;
 
+import org.springframework.web.util.UriComponentsBuilder;
+import org.xml.sax.SAXException;
 
 /**
  * @author  Neil Griffin
@@ -62,7 +69,7 @@ public class SearchServiceImpl implements SearchService {
 	@Autowired
 	private LiferayHttpRequestFactory _liferayHttpRequestFactory;
 
-	private static String _downloadText(Jwt jwt, String url) throws IOException {
+	private static String _downloadText(Jwt jwt, String url, int maxChars) throws IOException {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBearerAuth(jwt.getTokenValue());
@@ -71,32 +78,57 @@ public class SearchServiceImpl implements SearchService {
 		ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, byte[].class);
 
 		byte[] fileData = response.getBody();
-
-		Tika tika = new Tika();
-
-		try {
-			return tika.parseToString(new ByteArrayInputStream(fileData));
+		if (fileData == null) {
+			throw new IOException("Failed to download file content from " + url);
 		}
-		catch (TikaException e) {
-			throw new RuntimeException(e);
+
+		try (InputStream stream = new ByteArrayInputStream(fileData)) {
+			AutoDetectParser parser = new AutoDetectParser();
+			BodyContentHandler handler = new BodyContentHandler(maxChars);
+			Metadata metadata = new Metadata();
+			ParseContext context = new ParseContext();
+
+			try {
+				parser.parse(stream, handler, metadata, context);
+			} catch (WriteLimitReachedException e) {
+				// Log or acknowledge the truncation
+				System.err.println("Text extraction was truncated at " + maxChars + " characters.");
+			}
+
+			return handler.toString(); // Partial text is still available
+		} catch (IOException | SAXException | TikaException e) {
+			throw new RuntimeException("Failed to parse file content", e);
 		}
 	}
 
 	@Override
-	public List<SearchResult> getSearchResults(Jwt jwt, String keywords) throws IOException {
+	public List<SearchResult> getSearchResults(Jwt jwt, String keywords, String blueprintExternalReferenceCode, String scope) throws IOException {
 		Map<String, String> urlParameters = new HashMap<>();
-		urlParameters.put("nestedFields", URLEncoder.encode("embedded", "UTF-8"));
-		urlParameters.put("search", URLEncoder.encode(keywords, "UTF-8"));
+
+		String search = URLEncoder.encode(keywords, "UTF-8");
 		System.err.println("-----------------------");
 		System.err.println("keywords=" + keywords);
+		System.err.println("urlParameters=");
+		System.err.println(urlParameters);
+
+		String url = UriComponentsBuilder
+			.fromUriString("/search/v1.0/search")
+			.queryParam("search", search)
+			.queryParam("scope", scope)
+			.queryParam("nestedFields", "embedded")
+			.queryParam("blueprintExternalReferenceCode", blueprintExternalReferenceCode)
+			.toUriString();
+
+		System.err.println("url=" + url);
+		System.err.println("-----------------------");
 
 		return _getSearchResults(jwt,
 				_httpResponseFactory.getHttpResponseBody(
-					_liferayHttpRequestFactory.newLiferayPostRequest("/search/v1.0/search", jwt.getTokenValue(),
-						urlParameters)));
+					_liferayHttpRequestFactory.newLiferayGetRequest(url, jwt.getTokenValue())
+						));
 	}
 
-	private Document _downloadDocument(Jwt jwt, String itemURL, String relativeContentURL) throws IOException {
+	private Document _downloadDocument(Jwt jwt, String itemURL, String relativeContentURL, int maxChars) throws IOException {
 
 		String contentURL = _relative2AbsoluteURL(itemURL, relativeContentURL);
 
@@ -104,7 +136,7 @@ public class SearchServiceImpl implements SearchService {
 			return new Document();
 		}
 
-		return new Document(_downloadText(jwt, contentURL), contentURL);
+		return new Document(_downloadText(jwt, contentURL, maxChars), contentURL);
 	}
 
 	private List<SearchResult> _getSearchResults(Jwt jwt, String json) throws IOException {
@@ -115,9 +147,20 @@ public class SearchServiceImpl implements SearchService {
 			JsonNode rootNode = objectMapper.readTree(json);
 			JsonNode itemsJsonNode = rootNode.path("items");
 
+			System.err.println("itemsJsonNode=" + itemsJsonNode);
+			if (!itemsJsonNode.isArray()) {
+				System.err.println("No search results found.");
+				return searchResults;
+			}
+			System.err.println("itemsJsonNode.size()=" + itemsJsonNode.size());
+
+			// 128_000 is the approximate upper bound of ChatGPT tokens for a single request
+			// 80_000 is a safe margin for model + leaving room for the system prompt
+			int remainingChars = 80_000;
+
 			for (JsonNode itemJsonNode : itemsJsonNode) {
 
-				if (searchResults.size() == 3) {
+				if ((searchResults.size() == 3) || (remainingChars <= 1024)) {
 
 					// Stop after 3 search results for now until relevance/score can be figured out better.
 					break;
@@ -154,8 +197,12 @@ public class SearchServiceImpl implements SearchService {
 							}
 						}
 
-						contentText = sb.toString();
-						relativeContentURL = "/w/" + embeddedJsonNode.path("friendlyUrlPath").asText();
+						String text = sb.toString();
+						contentText = text.length() > remainingChars ? text.substring(0, remainingChars) : text;
+
+						System.err.println("embeddedJsonNode.path('siteId').asInt()=" + embeddedJsonNode.path("siteId").asInt());
+
+						relativeContentURL = "/web/guest/w/" + embeddedJsonNode.path("friendlyUrlPath").asText();
 						contentURL = _relative2AbsoluteURL(itemURL, relativeContentURL);
 					}
 
@@ -164,8 +211,10 @@ public class SearchServiceImpl implements SearchService {
 
 				case BLOG: {
 					addSearchResult = true;
-					contentText = _html2Text(embeddedJsonNode.path("articleBody").asText());
-					relativeContentURL = "/b/" + embeddedJsonNode.path("friendlyUrlPath").asText();
+					String rawHtml = embeddedJsonNode.path("articleBody").asText();
+					String text = _html2Text(rawHtml);
+					contentText = text.length() > remainingChars ? text.substring(0, remainingChars) : text;
+					relativeContentURL = "/web/guest/b/" + embeddedJsonNode.path("friendlyUrlPath").asText();
 					contentURL = _relative2AbsoluteURL(itemURL, relativeContentURL);
 
 					break;
@@ -178,13 +227,13 @@ public class SearchServiceImpl implements SearchService {
 
 					if ("application/vnd+liferay.video.external.shortcut+html".equals(encodingFormat)) {
 						contentText = description;
-						relativeContentURL = "/d/" + embeddedJsonNode.path("friendlyUrlPath").asText();
+						relativeContentURL = "/web/guest/d/" + embeddedJsonNode.path("friendlyUrlPath").asText();
 						contentURL = _relative2AbsoluteURL(itemURL, relativeContentURL);
 					}
 					else {
 						relativeContentURL = embeddedJsonNode.path("contentUrl").asText();
 
-						Document document = _downloadDocument(jwt, itemURL, relativeContentURL);
+						Document document = _downloadDocument(jwt, itemURL, relativeContentURL, remainingChars);
 						contentText = document.getContentText();
 						contentURL = document.getURL();
 					}
@@ -194,7 +243,12 @@ public class SearchServiceImpl implements SearchService {
 				}
 
 				if (addSearchResult) {
+
+					System.err.println("Search Result: type=\"" + type.name() + "\" title=\"" + title + "\" description=\"" + description + "\"");
+
 					searchResults.add(new SearchResult(title, description, itemURL, contentText, contentURL, type));
+
+					remainingChars -= contentText.length();
 				}
 			}
 

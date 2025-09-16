@@ -100,11 +100,14 @@ public class ChatController {
 
 		List<SearchResult> searchResults = new ArrayList<>();
 
+		System.out.println("ChatRequest: messages=" + messages);
+
 		if (messages.size() > 0) {
 
 			// Search based on last message
 			try {
-				searchResults = _searchService.getSearchResults(jwt, messages.get(messages.size() - 1));
+				searchResults = _searchService.getSearchResults(jwt, messages.get(messages.size() - 1), chatRequest.getBlueprintExternalReferenceCode(),
+						chatRequest.getScope());
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);
@@ -210,6 +213,8 @@ public class ChatController {
 	public static class ChatRequest {
 		private List<String> messages;
 		private List<String> roles;
+		private String blueprintExternalReferenceCode;
+		private String scope;
 
 		public List<String> getMessages() {
 			return messages;
@@ -219,12 +224,28 @@ public class ChatController {
 			return roles;
 		}
 
+		public String getBlueprintExternalReferenceCode() {
+			return blueprintExternalReferenceCode;
+		}
+
+		public String getScope() {
+			return scope;
+		}
+
 		public void setMessages(List<String> messages) {
 			this.messages = messages;
 		}
 
 		public void setRoles(List<String> roles) {
 			this.roles = roles;
+		}
+
+		public void setBlueprintExternalReferenceCode(String blueprintExternalReferenceCode) {
+			this.blueprintExternalReferenceCode = blueprintExternalReferenceCode;
+		}
+
+		public void setScope(String scope) {
+			this.scope = scope;
 		}
 	}
 
