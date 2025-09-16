@@ -1,10 +1,6 @@
-FROM maven:3.8.3-openjdk-17
+FROM liferay/jar-runner:latest
 
-COPY . /opt/liferay/cmschat
-WORKDIR /opt/liferay/cmschat
+COPY --chown=liferay:liferay *.jar /opt/liferay/jar-runner.jar
 
-RUN ["mvn", "clean", "install"]
-
-EXPOSE 9090
-
-CMD ["java", "-jar", "build/cmschat-0.0.1-SNAPSHOT.jar"]
+#ENV JAVA_VERSION="zulu21"
+#ENV LIFERAY_JAR_RUNNER_JAVA_OPTS="-Xmx512m"
