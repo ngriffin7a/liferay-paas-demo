@@ -1,0 +1,110 @@
+<div class="aisummary">
+    <img class="busy-icon-template" src="[resources:liferay-icon-white-boxes.png]" style="display:none;">
+    <div id="chatWindow" style="display: flex; flex-direction: column;">
+        <!-- Chat messages will appear here -->
+    </div>
+</div>
+
+<script type="module">
+    const oauth2Client = Liferay.OAuth2Client.FromUserAgentApplication('${configuration.userAgentERC}');
+
+    function getUrlParam(name) {
+        const params = new URLSearchParams(window.location.search);
+        return params.get(name);
+    }
+
+    function typeWriter(element, text, speed) {
+        let i = 0;
+        function typeEffect() {
+            if (i < text.length) {
+                element.innerHTML = text.slice(0, i + 1);
+                i++;
+                setTimeout(typeEffect, speed);
+            }
+        }
+        typeEffect();
+    }
+
+    function addUserMessage(chatWindow, text) {
+        const message = document.createElement('div');
+        message.classList.add('chat-bubble', 'user');
+        message.textContent = text;
+        chatWindow.appendChild(message);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function addAssistantMessage(chatWindow, text) {
+        const message = document.createElement('div');
+        message.classList.add('chat-bubble', 'assistant');
+        message.innerHTML = '';
+        chatWindow.appendChild(message);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        typeWriter(message, text, 0);
+    }
+
+    function addBusyCursor(chatWindow) {
+        const message = document.createElement('div');
+        const img = document.createElement('img');
+        img.src = document.querySelector('.busy-icon-template').src;
+        img.classList.add("busy-icon");
+        message.classList.add('chat-bubble', 'assistant', 'busy');
+        message.innerHTML = '';
+        message.appendChild(img);
+        chatWindow.appendChild(message);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function removeBusyCursor(chatWindow) {
+        const busyMessages = chatWindow.querySelectorAll('.busy');
+        busyMessages.forEach(busyMessage => {
+            chatWindow.removeChild(busyMessage);
+        });
+    }
+
+    function sendInstruction(instruction) {
+        const chatWindow = document.getElementById('chatWindow');
+        addUserMessage(chatWindow, instruction);
+        addBusyCursor(chatWindow);
+
+        const url = `${configuration.protocol}://${configuration.hostname}:${configuration.port}/cmschat/completions`;
+
+        oauth2Client
+            .fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    messages: [instruction],
+                    roles: ['user']
+                }),
+            })
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Network response was not ok");
+                }
+            })
+            .then((data) => {
+                removeBusyCursor(chatWindow);
+                if (data.assistant) {
+                    addAssistantMessage(chatWindow, data.assistant);
+                }
+            })
+            .catch((error) => {
+                console.error("There was a problem with the fetch operation:", error);
+            });
+    }
+
+    // Run on load
+    const assetType = getUrlParam('assetType');
+    const assetTitle = getUrlParam('assetTitle');
+
+    if (assetType && assetTitle) {
+        const instruction = "Summarize the " + assetType + " titled \"" + assetTitle + "\"";
+        sendInstruction(instruction);
+    } else {
+        console.warn('Missing URL parameter: assetType or assetTitle');
+    }
+</script>

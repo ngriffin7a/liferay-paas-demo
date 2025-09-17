@@ -1,0 +1,36 @@
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"dataType": "string",
+					"defaultValue": "liferay-cmschat-oauth-application-user-agent",
+					"label": "User Agent ERC",
+					"name": "userAgentERC",
+					"type": "text"
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "https",
+					"label": "protocol",
+					"name": "protocol",
+					"type": "text"
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "localhost",
+					"label": "host-name",
+					"name": "hostname",
+					"type": "text"
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "443",
+					"label": "port",
+					"name": "port",
+					"type": "text"
+				}
+			]
+		}
+	]
+}
