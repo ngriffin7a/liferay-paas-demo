@@ -1,0 +1,10 @@
+{
+	"contentSubtype": {
+		"subtypeId": 33932,
+		"subtypeKey": "PRESS-RELEASE"
+	},
+	"contentType": {
+		"className": "com.liferay.journal.model.JournalArticle"
+	},
+	"name": "Press Release DPT"
+}
