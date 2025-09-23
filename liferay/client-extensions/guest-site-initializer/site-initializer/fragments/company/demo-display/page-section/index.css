@@ -1,0 +1,32 @@
+.page-section {
+	border-bottom: 1px solid var(--color-neutral-2);
+	margin-bottom: 16px;
+}
+
+.page-section .heading-container {
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+}
+
+.page-section .heading-container.selected {
+	background-color: var(--color-accent-3-lighten);
+}
+
+.page-section .heading-container .button-label {
+	margin-left: 6px;
+}
+
+.page-section h1, .page-section h2, .page-section h3, .page-section h4, .page-section h5 {
+	color: var(--color-brand-primary-darken-5);
+	margin-left: 4px;
+}
+
+.page-section .drop-zone-parent {
+	margin-left: 4px;
+	padding-top: 10px;
+}
+
+.page-section .component-paragraph img {
+	max-width: 100%;
+}

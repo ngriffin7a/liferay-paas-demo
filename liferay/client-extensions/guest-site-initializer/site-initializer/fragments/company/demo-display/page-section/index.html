@@ -1,0 +1,24 @@
+<div class="page-section">
+<section id="${configuration.sectionName}">
+<div class="heading-container">
+	<div>		
+    <${configuration.headingLevel} class="component-heading mb-0 text-break" data-lfr-editable-id="element-heading" data-lfr-editable-type="text">
+    Section Heading
+    </${configuration.headingLevel}>
+	</div>
+	<div>
+		<button class="button-with-icon btn btn-sm btn-link d-inline-flex align-items-center no-print" id="fragment-${fragmentEntryLinkNamespace}-email">
+	    <span>[@clay["icon"] symbol="envelope-closed" /]</span>
+	    <span class="button-label">Email Section</span>
+    </button>
+		<button class="button-with-icon btn btn-sm btn-link d-inline-flex align-items-center no-print" id="fragment-${fragmentEntryLinkNamespace}-print" onclick="window.print();">
+	    <span>[@clay["icon"] symbol="print" /]</span>
+	    <span class="button-label">Print Section</span>
+    </button>
+	</div>
+</div>
+<div class="drop-zone-parent">
+<lfr-drop-zone/>
+</div>
+</section>
+</div>
