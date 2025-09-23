@@ -1,0 +1,23 @@
+.page-section-nav {
+	  border-radius: var(--border-radius-sm) !important;
+	  padding: 4px !important;
+    position: fixed !important;
+    background-color: var(--color-accent-4);
+	  width: 358px; !important;
+    transition: top 0.3s ease-in-out;
+}
+
+.page-section-nav ul {
+    list-style: none !important;
+	  margin: 0px !important;
+	  padding: 4px !important;
+}
+
+.page-section-nav ul a:selected {
+	font-weight: bold;
+}
+
+.page-section-nav ul li a:hover {
+    color: var(--color-neutral-4) !important;
+    transform: scale(1.1) !important;
+}
