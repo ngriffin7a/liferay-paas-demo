@@ -1,0 +1,17 @@
+[#if configuration.type == "action"]
+	<button class="button-with-icon btn btn-${configuration.buttonSize} btn-${configuration.buttonType} d-inline-flex align-items-center" data-lfr-editable-id="action" data-lfr-editable-type="action">
+		<span style="font-size: ${configuration.iconSize}">
+			[@clay["icon"] symbol="${configuration.iconName}" /]
+		</span>
+		<span>Go Somewhere</span>
+	</button>
+[#else]
+		<div class="button-with-icon text-break">
+			<a class="btn btn-${configuration.buttonSize} btn-${configuration.buttonType} d-inline-flex align-items-center" data-lfr-editable-id="link" data-lfr-editable-type="link" href="" id="fragment-${fragmentEntryLinkNamespace}-link">
+				<span style="font-size: ${configuration.iconSize}">
+					[@clay["icon"] symbol="${configuration.iconName}" /]
+				</span>
+				Go Somewhere
+			</a>
+		</div>
+[/#if]

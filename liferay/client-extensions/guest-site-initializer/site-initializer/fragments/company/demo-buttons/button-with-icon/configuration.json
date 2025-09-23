@@ -1,0 +1,111 @@
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"dataType": "string",
+					"defaultValue": "link",
+					"label": "type",
+					"name": "type",
+					"type": "select",
+					"typeOptions": {
+						"validValues": [
+							{
+								"value": "link"
+							},
+							{
+								"value": "action"
+							}
+						]
+					}
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "primary",
+					"label": "style",
+					"name": "buttonType",
+					"type": "select",
+					"typeOptions": {
+						"validValues": [
+							{
+								"value": "primary"
+							},
+							{
+								"value": "secondary"
+							},
+							{
+								"value": "link"
+							},
+							{
+								"value": "outline-primary"
+							},
+							{
+								"value": "outline-secondary"
+							}
+						]
+					}
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "nm",
+					"label": "size",
+					"name": "buttonSize",
+					"type": "select",
+					"typeOptions": {
+						"validValues": [
+							{
+								"label": "small",
+								"value": "sm"
+							},
+							{
+								"label": "normal",
+								"value": "nm"
+							},
+							{
+								"label": "large",
+								"value": "lg"
+							}
+						]
+					}
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "check-circle",
+					"label": "icon-name",
+					"name": "iconName",
+					"type": "text"
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "16px",
+					"label": "icon-size",
+					"name": "iconSize",
+					"type": "select",
+					"typeOptions": {
+						"validValues": [
+							{
+								"value": "16px"
+							},
+							{
+								"value": "32px"
+							},
+							{
+								"value": "48px"
+							},
+							{
+								"value": "64px"
+							},
+							{
+								"value": "128px"
+							},
+							{
+								"value": "256px"
+							}
+						]
+					}
+				}
+			],
+			"label": "button-options"
+		}
+	]
+}
