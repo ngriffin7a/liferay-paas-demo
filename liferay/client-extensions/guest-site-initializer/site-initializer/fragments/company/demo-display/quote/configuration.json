@@ -1,0 +1,16 @@
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"dataType": "int",
+					"defaultValue": "2",
+					"label": "Quote Max Lines",
+					"name": "quoteMaxLines",
+					"type": "text"
+				}				
+			],
+			"label": "quote-options"
+		}
+	]
+}

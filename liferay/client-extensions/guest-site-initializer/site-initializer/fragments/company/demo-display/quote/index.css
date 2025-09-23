@@ -1,0 +1,53 @@
+.testimonial-wrapper {
+  background: var(--color-brand-primary);
+  padding: 2rem;
+  border-radius: 0.75rem;
+  color: #fff;
+  max-width: 720px;
+  margin: 2rem auto;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.testimonial-quote {
+  margin: 0;
+  position: relative;
+  padding-left: 2.5rem;
+  font-style: italic;
+}
+
+.testimonial-quote::before {
+  content: "“";
+  font-size: 4rem;
+  position: absolute;
+  top: -0.5rem;
+  left: 0;
+  color: var(--color-accent-1);
+  line-height: 1;
+}
+
+.quote-text {
+  -webkit-line-clamp: var(--quote-max-lines);
+  -webkit-box-orient: vertical;
+  max-height: calc(var(--quote-max-lines) * 1.2em);
+  min-height: calc(var(--quote-max-lines) * 1.2em);
+  display: -webkit-box;
+  overflow: hidden;
+}
+
+.quote-footer {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  font-style: normal;
+  color: var(--color-accent-5);
+}
+
+.quote-name {
+  font-weight: 600;
+}
+
+.quote-role {
+  font-style: italic;
+}
+
