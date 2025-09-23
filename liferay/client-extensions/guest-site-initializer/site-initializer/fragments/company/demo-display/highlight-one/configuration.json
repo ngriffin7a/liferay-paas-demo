@@ -1,0 +1,23 @@
+{
+	"fieldSets": [
+		{
+			"fields": [			
+				{
+					"dataType": "string",
+					"defaultValue": "highlight-one",
+					"label": "Item Class Name",
+					"name": "itemClassName",
+					"type": "text"
+				},
+				{
+					"dataType": "double",
+					"defaultValue": "0.25",
+					"label": "Opacity",
+					"name": "opacity",
+					"type": "text"
+				}
+			],
+			"label": "highlight-one-options"
+		}
+	]
+}
