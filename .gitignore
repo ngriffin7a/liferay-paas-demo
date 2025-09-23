@@ -39,3 +39,7 @@ target
 
 ### Mac OS ###
 .DS_Store
+
+## Misc ##
+liferay/configs/common/osgi
+liferay/configs/common/tomcat
