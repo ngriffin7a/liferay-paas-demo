@@ -1,0 +1,26 @@
+.fragment-products .fixed-table-toolbar {
+	/* display: flex; */
+	justify-content: space-between;
+	/* align-items: center; */
+	flex-direction: row;
+}
+
+.fragment-products .fixed-table-toolbar div:first-child {
+	margin-right: auto; /* moves the first div to the left */
+}
+
+.fragment-products .fixed-table-toolbar div:last-child {
+	margin-left: auto; /* moves the last div to the right */
+}
+
+.fragment-products table tr:nth-child(even) {
+    background-color: var(--color-neutral-1);
+}
+
+.fragment-products table tr td {
+  height: unset !important;
+	padding-left: 20px !important;
+	padding-right: 20px !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+}
