@@ -1,0 +1,15 @@
+{
+  "fieldSets": [
+    {
+      "fields": [
+				{
+					"dataType": "string",
+					"name": "href",
+					"label": "URL",
+					"type": "text",
+					"defaultValue": "/"
+        }
+      ]
+    }
+  ]
+}
