@@ -1,0 +1,47 @@
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"dataType": "string",
+					"defaultValue": "3000",
+					"label": "delay-show",
+					"name": "delay",
+					"type": "text",
+					"typeOptions": {
+						"placeholder": "3000"
+					}
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "",
+					"label": "modal-alignment",
+					"name": "modalVerticalAlignment",
+					"type": "select",
+					"typeOptions": {
+						"validValues": [
+							{
+								"label": "top",
+								"value": ""
+							},
+							{
+								"label": "centered",
+								"value": "modal-dialog-centered"
+							}
+						]
+					}
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "",
+					"label": "cookie-name",
+					"name": "cookieName",
+					"type": "text",
+					"typeOptions": {
+						"placeholder": "Enter cookie name"
+					}
+				}
+			]
+		}
+	]
+}
