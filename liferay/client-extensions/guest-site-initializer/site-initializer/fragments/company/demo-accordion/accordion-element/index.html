@@ -1,0 +1,15 @@
+[#assign itemId = random.nextInt() /]
+<div class="accordion-element panel panel-default">
+  <div class="panel-heading" style="background-color: ${configuration.headingBackgroundColor}">
+  <${configuration.headingLevel} class="panel-title">
+    <a data-toggle="collapse" data-parent=".accordion-container" href="#collapse-${itemId}">
+			<span data-lfr-editable-id="header-text" data-lfr-editable-type="text">Mappable Heading</span>
+		</a>
+  </${configuration.headingLevel}>
+  </div>
+  <div id="collapse-${itemId}" class="panel-collapse collapse">
+    <div class="panel-body">
+      <div data-lfr-editable-id="body-text" data-lfr-editable-type="text">Mappable Body</p>
+    </div>
+  </div>
+</div>

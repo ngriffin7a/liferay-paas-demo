@@ -1,0 +1,25 @@
+.panel-title {
+	font-size: revert;
+}
+
+.panel-title>a, .panel-title>a:active{
+	display:block;
+	padding:4px;
+}
+
+.panel-heading {
+  border-radius: 3px;
+}
+
+.panel-heading a:before {
+   font-family: 'Glyphicons Halflings';
+   content: "\e114";
+   float: right;
+   transition: all 0.5s;
+}
+
+.panel-heading.active a:before {
+	-webkit-transform: rotate(180deg);
+	-moz-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
