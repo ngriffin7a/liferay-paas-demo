@@ -1,0 +1,40 @@
+.responsive-menu-display .navbar-nav .nav-link {
+    padding-top: 1px !important;
+    padding-bottom: 1px !important;
+	  color: var(--color-brand-primary);
+}
+
+.responsive-menu-display .dropdown-menu {
+  margin-top: 0px;
+}
+
+.responsive-menu-display .navbar-toggler-icon {
+  /* filter: brightness(0) invert(1); */
+}
+
+@media only screen and (max-width: 600px) {
+  .responsive-menu-display .navbar-toggler {
+    display: block !important;
+  }
+
+  .responsive-menu-display .collapse.navbar-collapse {
+    display: none !important;
+  }
+
+  .responsive-menu-display .collapse.navbar-collapse.show {
+    display: block !important;
+  }
+}
+
+/* Hide toggle button and always show menu on wider screens (>600px) */
+@media only screen and (min-width: 601px) {
+  .responsive-menu-display .navbar-toggler {
+    display: none !important;
+  }
+
+  .responsive-menu-display .collapse.navbar-collapse {
+    display: block !important;
+    height: auto !important;
+    visibility: visible !important;
+  }
+}
