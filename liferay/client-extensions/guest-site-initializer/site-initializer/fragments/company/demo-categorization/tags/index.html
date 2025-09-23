@@ -1,0 +1,39 @@
+<div class="tags-fragment">
+	[#assign assetEntry = "" /]
+
+	[#assign infoListDisplayObject = (request.getAttribute("INFO_LIST_DISPLAY_OBJECT"))! /]
+	[#assign liferaySharedLayoutAssetEntry = (request.getAttribute("LIFERAY_SHARED_LAYOUT_ASSET_ENTRY"))! /]
+
+	[#if infoListDisplayObject?has_content]
+	[#assign modelClassName = infoListDisplayObject.modelClassName! /]
+		[#assign resourcePrimKey = infoListDisplayObject.resourcePrimKey! /]
+	[#elseif liferaySharedLayoutAssetEntry?has_content]
+		[#assign assetEntry = (request.getAttribute("LIFERAY_SHARED_LAYOUT_ASSET_ENTRY"))! /]
+	[/#if]
+
+	[#assign ignoredTags = configuration.ignoredTags?split(",")]
+
+	[#assign ignoredTags = ignoredTags?map(tag -> tag?trim?lower_case)]
+
+	[#assign tags_text = languageUtil.get(locale, "tags") ]
+
+	[#if !assetEntry?has_content || assetEntry.tagNames?size == 0]
+		[#if !configuration.hideIfEmpty]
+			<div class="alert alert-info">
+				[#if !assetEntry?has_content]
+					<span>Add this fragment to a display page or collection display fragment to show tags.</span>
+				[/#if]
+			</div>
+		[/#if]
+	[#else]
+		[#list assetEntry.tagNames as tagName]
+			[#if !ignoredTags?seq_contains(tagName?lower_case)]
+				<span class="label label-lg label-secondary">
+					<span class="label-item label-item-expand">
+						${tagName}
+					</span>
+				</span>
+			[/#if]
+		[/#list]
+	[/#if]
+</div>

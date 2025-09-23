@@ -1,0 +1,21 @@
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"dataType": "string",
+					"defaultValue": "category",
+					"label": "ignore-categories-label",
+					"name": "ignoredCategories",
+					"type": "text"
+				},
+				{
+					"defaultValue": false,
+					"label": "hide-if-empty",
+					"name": "hideIfEmpty",
+					"type": "checkbox"
+				}
+			]
+		}
+	]
+}

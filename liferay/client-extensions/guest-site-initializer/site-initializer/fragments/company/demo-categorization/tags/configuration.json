@@ -1,0 +1,21 @@
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"dataType": "string",
+					"defaultValue": "tag",
+					"label": "ignore-tags-label",
+					"name": "ignoredTags",
+					"type": "text"
+				},
+				{
+					"defaultValue": false,
+					"label": "hide-if-empty",
+					"name": "hideIfEmpty",
+					"type": "checkbox"
+				}
+			]
+		}
+	]
+}

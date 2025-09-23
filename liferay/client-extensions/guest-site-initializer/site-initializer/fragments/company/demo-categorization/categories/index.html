@@ -1,0 +1,39 @@
+<div class="categories-fragment">
+	[#assign assetEntry = "" /]
+
+	[#assign infoListDisplayObject = (request.getAttribute("INFO_LIST_DISPLAY_OBJECT"))! /]
+	[#assign liferaySharedLayoutAssetEntry = (request.getAttribute("LIFERAY_SHARED_LAYOUT_ASSET_ENTRY"))! /]
+
+	[#if infoListDisplayObject?has_content]
+		[#assign modelClassName = infoListDisplayObject.modelClassName! /]
+		[#assign resourcePrimKey = infoListDisplayObject.resourcePrimKey! /]
+	[#elseif liferaySharedLayoutAssetEntry?has_content]
+		[#assign assetEntry = (request.getAttribute("LIFERAY_SHARED_LAYOUT_ASSET_ENTRY"))! /]
+	[/#if]
+
+	[#assign ignoredCategories = configuration.ignoredCategories?split(",")]
+
+	[#assign ignoredCategories = ignoredCategories?map(category -> category?trim?lower_case)]
+
+	[#assign categories_text = languageUtil.get(locale, "categories") ]
+
+	[#if !assetEntry?has_content || assetEntry.categories?size == 0]
+		[#if !configuration.hideIfEmpty]
+				[#if !assetEntry?has_content]
+					<div class="alert alert-info">
+						<span class="mr-1">Add this fragment to a display page or collection display fragment to show categories.</span>
+					</div>
+				[/#if]
+		[/#if]
+	[#else]
+		[#list assetEntry.categories as category]
+			[#if !ignoredCategories?seq_contains(category.getPath(locale)?lower_case)]
+				<span class="label label-lg label-secondary">
+					<span class="label-item label-item-expand">
+						${category.getName()}
+					</span>
+				</span>
+			[/#if]
+		[/#list]
+	[/#if]
+</div>
