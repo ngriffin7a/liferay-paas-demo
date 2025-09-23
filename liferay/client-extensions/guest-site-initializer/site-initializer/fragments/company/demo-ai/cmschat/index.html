@@ -1,5 +1,5 @@
 <div class="cmschat">
-    <img class="busy-icon-template" src="[resources:liferay-icon-white-boxes]" style="display:none;">
+    <img class="busy-icon-template" src="[resources:liferay-icon-white-boxes.png]" style="display:none;">
     <div id="chatWindow"
         style="display: flex; flex-direction: column;">
         <!-- Chat messages will appear here -->
@@ -40,7 +40,8 @@
                             .map(child => child.textContent),
                         roles: Array.from(chatWindow.children)
                             .filter(child => !child.classList.contains('busy'))
-                            .map(child => child.classList.contains('assistant') ? 'assistant' : 'user')
+                            .map(child => child.classList.contains('assistant') ? 'assistant' : 'user'),
+                        blueprintERC: "${configuration.blueprintERC}"
                     }),
                 })
                 .then((response) => {
