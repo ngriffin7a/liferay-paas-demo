@@ -1,0 +1,6 @@
+{
+	"className": "com.liferay.portal.search.web.internal.custom.facet.portlet.CustomFacetPortlet",
+	"ddmTemplateKey": "DOCUMENT_TYPE",
+	"name": "File Type",
+	"resourceClassName": "com.liferay.portlet.display.template.PortletDisplayTemplate"
+}
