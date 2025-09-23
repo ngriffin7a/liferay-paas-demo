@@ -1,0 +1,153 @@
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"dataType": "string",
+					"defaultValue": "w-100",
+					"label": "image-size",
+					"name": "imageSize",
+					"type": "select",
+					"typeOptions": {
+						"validValues": [
+							{
+								"label": "fit",
+								"value": "w-100"
+							},
+							{
+								"label": "original-size",
+								"value": "w-0"
+							}
+						]
+					}
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "center",
+					"label": "alignment",
+					"name": "textAlignment",
+					"type": "select",
+					"typeOptions": {
+						"validValues": [
+							{
+								"label": "Center",
+								"value": "center"
+							},
+							{
+								"label": "Left",
+								"value": "left"
+							},
+							{
+								"label": "Right",
+								"value": "right"
+							},
+							{
+								"label": "Justify",
+								"value": "justify"
+							}
+						]
+					}
+				},				
+				{
+					"dataType": "string",
+					"defaultValue": "h3",
+					"label": "heading-level",
+					"name": "headingLevel",
+					"type": "select",
+					"typeOptions": {
+						"validValues": [
+							{
+								"value": "h1"
+							},
+							{
+								"value": "h2"
+							},
+							{
+								"value": "h3"
+							},
+							{
+								"value": "h4"
+							},
+							{
+								"value": "h5"
+							},
+							{
+								"value": "h6"
+							}
+						]
+					}
+				},				
+				{
+					"dataType": "int",
+					"defaultValue": "2",
+					"label": "Heading Max Lines",
+					"name": "headingMaxLines",
+					"type": "text"
+				},				
+				{
+					"dataType": "int",
+					"defaultValue": "4",
+					"label": "Headline Max Lines",
+					"name": "headlineMaxLines",
+					"type": "text"
+				},				
+				{
+					"dataType": "string",
+					"defaultValue": "primary",
+					"label": "style",
+					"name": "buttonType",
+					"type": "select",
+					"typeOptions": {
+						"validValues": [
+							{
+								"value": "primary"
+							},
+							{
+								"value": "secondary"
+							},
+							{
+								"value": "link"
+							},
+							{
+								"value": "outline-primary"
+							},
+							{
+								"value": "outline-secondary"
+							}
+						]
+					}
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "nm",
+					"label": "size",
+					"name": "buttonSize",
+					"type": "select",
+					"typeOptions": {
+						"validValues": [
+							{
+								"label": "small",
+								"value": "sm"
+							},
+							{
+								"label": "normal",
+								"value": "nm"
+							},
+							{
+								"label": "large",
+								"value": "lg"
+							}
+						]
+					}
+				},
+				{
+					"defaultValue": true,
+					"label": "Button Visibile",
+					"name": "buttonVisible",
+					"type": "checkbox"
+				}				
+			],
+			"label": "card-options"
+		}
+	]
+}

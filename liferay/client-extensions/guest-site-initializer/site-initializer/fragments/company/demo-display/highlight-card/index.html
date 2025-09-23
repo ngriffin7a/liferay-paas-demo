@@ -1,0 +1,24 @@
+<div class="highlight-card text-break mh-100 d-inline-block" style="--heading-max-lines:${configuration.headingMaxLines}; --headline-max-lines:${configuration.headlineMaxLines};">
+	<div class="card m-0 overflow-hidden">
+		<img alt="" class="${configuration.imageSize}" data-lfr-editable-id="01-img" data-lfr-editable-type="image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAJCAYAAAA7KqwyAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAkSURBVHgB7cxBEQAACAIwtH8Pzw52kxD8OBZgNXsPQUOUwCIgAz0DHTyygaAAAAAASUVORK5CYII=" />
+		<div class="card-body py-4">
+			<${configuration.headingLevel} class="highlight-card-heading highlight-card-text-align-${configuration.textAlignment}">
+				<span class="clearfix" data-lfr-editable-id="02-title" data-lfr-editable-type="rich-text">
+					Highlight Card Title
+				</span>
+			</${configuration.headingLevel}>
+			<div class="clearfix mb-4 highlight-card-headline highlight-card-text-align-${configuration.textAlignment}" data-lfr-editable-id="03-content" data-lfr-editable-type="rich-text">
+				<p>
+					Highlight Card Headline
+				</p>
+			</div>
+[#if configuration.buttonVisible]			
+			<div class="component-button text-break highlight-card-text-align-${configuration.textAlignment}">
+			  <a class="btn btn-${configuration.buttonSize} btn-${configuration.buttonType}" data-lfr-editable-id="link" data-lfr-editable-type="link" href="" id="fragment-${fragmentEntryLinkNamespace}-link">
+			  Read More
+			  </a>
+			</div>
+[/#if]
+		</div>
+	</div>
+</div>
