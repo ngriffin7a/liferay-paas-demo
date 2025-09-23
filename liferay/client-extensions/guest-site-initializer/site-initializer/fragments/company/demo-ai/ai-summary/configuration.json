@@ -11,6 +11,13 @@
 				},
 				{
 					"dataType": "string",
+					"defaultValue": "",
+					"label": "Blueprint ERC",
+					"name": "blueprintERC",
+					"type": "text"
+				},
+				{
+					"dataType": "string",
 					"defaultValue": "https",
 					"label": "protocol",
 					"name": "protocol",

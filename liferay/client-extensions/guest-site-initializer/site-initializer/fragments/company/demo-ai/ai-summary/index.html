@@ -76,7 +76,8 @@
                 },
                 body: JSON.stringify({
                     messages: [instruction],
-                    roles: ['user']
+                    roles: ['user'],
+                    blueprintERC: "${configuration.blueprintERC}"
                 }),
             })
             .then((response) => {
