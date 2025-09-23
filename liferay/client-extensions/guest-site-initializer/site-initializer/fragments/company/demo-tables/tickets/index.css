@@ -1,0 +1,14 @@
+.fragment-tickets .fixed-table-toolbar {
+	/* display: flex; */
+	justify-content: space-between;
+	/* align-items: center; */
+	flex-direction: row;
+}
+
+.fragment-tickets .fixed-table-toolbar div:first-child {
+	margin-right: auto; /* moves the first div to the left */
+}
+
+.fragment-tickets .fixed-table-toolbar div:last-child {
+	margin-left: auto; /* moves the last div to the right */
+}
