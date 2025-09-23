@@ -1,0 +1,13 @@
+liferay-guest-site-initializer:
+    name: Liferay Guest Site Initializer
+    oAuthApplicationHeadlessServer: liferay-guest-site-initializer-oauth-application-headless-server
+    siteExternalReferenceCode: L_GUEST
+    siteName: Liferay
+    type: siteInitializer
+liferay-guest-site-initializer-oauth-application-headless-server:
+    .serviceAddress: localhost:8080
+    .serviceScheme: http
+    name: Liferay Guest OAuth Application Headless Server
+    scopes:
+        - Liferay.Headless.Site.everything
+    type: oAuthApplicationHeadlessServer
