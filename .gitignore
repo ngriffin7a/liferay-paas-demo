@@ -20,6 +20,7 @@ bin/
 !**/src/test/**/bin/
 
 ## Gradle
+.gradle
 build
 dist
 
