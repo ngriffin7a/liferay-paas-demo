@@ -1,0 +1,29 @@
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"dataType": "string",
+					"defaultValue": "",
+					"label": "auth-token",
+					"name": "authToken",
+					"type": "text"
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "foo.atlassian.net",
+					"label": "host-name",
+					"name": "hostName",
+					"type": "text"
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "A,B,C",
+					"label": "project-keys",
+					"name": "projectKeys",
+					"type": "text"
+				}
+			]
+		}
+	]
+}

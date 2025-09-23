@@ -1,0 +1,27 @@
+<div class="fragment-jira">
+	<div id="jira-toolbar">
+	<label>${languageUtil.get(locale, "project")}</label>
+	<select>
+		[#list configuration.projectKeys?split(",") as projectKey]
+			<option value="${projectKey}">${projectKey}</option>
+		[/#list]
+	</select>
+</div>
+	<table
+		data-page-list="[10, 25, 50, 100, 200, All]"
+		data-pagination="true"
+		data-search="true"
+		data-side-pagination="server"
+		data-toggle="table"
+		data-toolbar="#jira-toolbar">
+		<thead>
+			<tr>
+				<th data-field="key" data-sortable="true">${languageUtil.get(locale, "key")}</th>
+				<th data-field="fields.status.name" data-sortable="true">${languageUtil.get(locale, "status")}</th>
+				<th data-field="fields.summary" data-sortable="true">${languageUtil.get(locale, "title")}</th>
+				<th data-field="fields.creator.displayName" data-sortable="true">${languageUtil.get(locale, "creator")}</th>
+				<th data-field="fields.assignee" data-sortable="true">${languageUtil.get(locale, "assignee")}</th>
+			</tr>
+		</thead>
+	</table>
+</div>
