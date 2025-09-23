@@ -1,0 +1,15 @@
+{
+	"fieldSets": [
+		{
+			"fields": [
+				{
+					"dataType": "string",
+					"defaultValue": "0.4",
+					"label": "opacity",
+					"name": "opacity",
+					"type": "text"
+				}
+			]
+		}
+	]
+}
