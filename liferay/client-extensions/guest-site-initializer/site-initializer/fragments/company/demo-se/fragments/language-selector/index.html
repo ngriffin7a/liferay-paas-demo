@@ -1,0 +1,9 @@
+<div class="language-selector">
+	[#assign preferences = freeMarkerPortletPreferences.getPreferences("portletSetupPortletDecoratorId", "barebone") /]
+
+	[@liferay_portlet["runtime"]
+		defaultPreferences=preferences
+		portletProviderAction=portletProviderAction.VIEW
+		portletProviderClassName="com.liferay.portal.kernel.servlet.taglib.ui.LanguageEntry"
+	/]
+</div>
