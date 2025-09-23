@@ -1,0 +1,4 @@
+Bundle-Name: personalized-dropzone
+Bundle-SymbolicName: com.liferay.demo.fragment.personalized.dropzone
+Bundle-Version: 1.0.0
+Web-ContextPath: /personalized-dropzone
