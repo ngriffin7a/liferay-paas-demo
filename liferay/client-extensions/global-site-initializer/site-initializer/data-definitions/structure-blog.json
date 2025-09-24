@@ -1,0 +1,116 @@
+{
+	"availableLanguageIds": [
+		"en_US"
+	],
+	"contentType": "journal",
+	"dataDefinitionFields": [
+		{
+			"customProperties": {
+				"fieldNamespace": "",
+				"visibilityExpression": "",
+				"dataType": "image",
+				"requiredDescription": true,
+				"fieldReference": "mainImage"
+			},
+			"defaultValue": {
+				"en_US": {}
+			},
+			"fieldType": "image",
+			"indexType": "text",
+			"indexable": true,
+			"label": {
+				"en_US": "Main Image"
+			},
+			"localizable": true,
+			"name": "mainImage",
+			"nestedDataDefinitionFields": [],
+			"readOnly": false,
+			"repeatable": false,
+			"required": false,
+			"showLabel": true,
+			"tip": {
+				"en_US": ""
+			}
+		},
+		{
+			"customProperties": {
+				"fieldNamespace": "ddm",
+				"visibilityExpression": "null",
+				"editorConfig": null,
+				"dataType": "string",
+				"fieldReference": "content"
+			},
+			"defaultValue": {
+				"en_US": ""
+			},
+			"fieldType": "rich_text",
+			"indexType": "text",
+			"indexable": true,
+			"label": {
+				"en_US": "Content"
+			},
+			"localizable": true,
+			"name": "content",
+			"nestedDataDefinitionFields": [],
+			"readOnly": false,
+			"repeatable": false,
+			"required": false,
+			"showLabel": true,
+			"tip": {
+				"en_US": ""
+			}
+		}
+	],
+	"dataDefinitionKey": "BLOG",
+	"defaultDataLayout": {
+		"dataLayoutFields": {},
+		"dataLayoutPages": [
+			{
+				"dataLayoutRows": [
+					{
+						"dataLayoutColumns": [
+							{
+								"columnSize": 12,
+								"fieldNames": [
+									"mainImage"
+								]
+							}
+						]
+					},
+					{
+						"dataLayoutColumns": [
+							{
+								"columnSize": 12,
+								"fieldNames": [
+									"content"
+								]
+							}
+						]
+					}
+				],
+				"description": {
+					"en_US": "Description"
+				},
+				"title": {
+					"en_US": "Blog"
+				}
+			}
+		],
+		"dataRules": [],
+		"description": {
+			"en_US": "Blog"
+		},
+		"name": {
+			"en_US": "Blog"
+		},
+		"paginationMode": "single-page"
+	},
+	"defaultLanguageId": "en_US",
+	"description": {
+		"en_US": "Blog"
+	},
+	"name": {
+		"en_US": "Blog"
+	},
+	"storageType": "default"
+}

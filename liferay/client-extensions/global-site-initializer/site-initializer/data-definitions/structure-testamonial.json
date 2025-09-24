@@ -1,0 +1,74 @@
+{
+	"availableLanguageIds": [
+		"en_US"
+	],
+	"contentType": "journal",
+	"dataDefinitionFields": [
+		{
+			"customProperties": {
+				"fieldNamespace": "ddm",
+				"visibilityExpression": "null",
+				"editorConfig": null,
+				"dataType": "string",
+				"fieldReference": "content"
+			},
+			"defaultValue": {},
+			"fieldType": "rich_text",
+			"indexType": "text",
+			"indexable": true,
+			"label": {
+				"en_US": "Content"
+			},
+			"localizable": true,
+			"name": "content",
+			"nestedDataDefinitionFields": [],
+			"readOnly": false,
+			"repeatable": false,
+			"required": false,
+			"showLabel": true,
+			"tip": {}
+		}
+	],
+	"dataDefinitionKey": "TESTAMONIAL",
+	"defaultDataLayout": {
+		"dataLayoutFields": {},
+		"dataLayoutPages": [
+			{
+				"dataLayoutRows": [
+					{
+						"dataLayoutColumns": [
+							{
+								"columnSize": 12,
+								"fieldNames": [
+									"content"
+								]
+							}
+						]
+					}
+				],
+				"description": {
+					"en_US": "Description"
+				},
+				"title": {
+					"en_US": "Testamonial"
+				}
+			}
+		],
+		"dataRules": [],
+		"description": {
+			"en_US": "Testamonial"
+		},
+		"name": {
+			"en_US": "Testamonial"
+		},
+		"paginationMode": "single-page"
+	},
+	"defaultLanguageId": "en_US",
+	"description": {
+		"en_US": "Testamonial"
+	},
+	"name": {
+		"en_US": "Testamonial"
+	},
+	"storageType": "default"
+}

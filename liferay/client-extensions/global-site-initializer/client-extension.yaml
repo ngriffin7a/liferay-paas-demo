@@ -1,0 +1,13 @@
+liferay-global-site-initializer:
+    name: Liferay Global Site Initializer
+    oAuthApplicationHeadlessServer: liferay-global-site-initializer-oauth-application-headless-server
+    siteExternalReferenceCode: c253faaf-2ac8-1518-941d-3ddfbf83aa35
+    siteName: Global
+    type: siteInitializer
+liferay-global-site-initializer-oauth-application-headless-server:
+    .serviceAddress: localhost:8080
+    .serviceScheme: http
+    name: Liferay Global OAuth Application Headless Server
+    scopes:
+        - Liferay.Headless.Site.everything
+    type: oAuthApplicationHeadlessServer

@@ -1,0 +1,74 @@
+{
+	"availableLanguageIds": [
+		"en_US"
+	],
+	"contentType": "journal",
+	"dataDefinitionFields": [
+		{
+			"customProperties": {
+				"fieldNamespace": "ddm",
+				"visibilityExpression": "null",
+				"editorConfig": null,
+				"dataType": "string",
+				"fieldReference": "Answer"
+			},
+			"defaultValue": {},
+			"fieldType": "rich_text",
+			"indexType": "text",
+			"indexable": true,
+			"label": {
+				"en_US": "Answer"
+			},
+			"localizable": true,
+			"name": "Answer",
+			"nestedDataDefinitionFields": [],
+			"readOnly": false,
+			"repeatable": false,
+			"required": false,
+			"showLabel": true,
+			"tip": {}
+		}
+	],
+	"dataDefinitionKey": "FAQ",
+	"defaultDataLayout": {
+		"dataLayoutFields": {},
+		"dataLayoutPages": [
+			{
+				"dataLayoutRows": [
+					{
+						"dataLayoutColumns": [
+							{
+								"columnSize": 12,
+								"fieldNames": [
+									"Answer"
+								]
+							}
+						]
+					}
+				],
+				"description": {
+					"en_US": "Description"
+				},
+				"title": {
+					"en_US": "FAQ"
+				}
+			}
+		],
+		"dataRules": [],
+		"description": {
+			"en_US": "FAQ"
+		},
+		"name": {
+			"en_US": "FAQ"
+		},
+		"paginationMode": "single-page"
+	},
+	"defaultLanguageId": "en_US",
+	"description": {
+		"en_US": "FAQ"
+	},
+	"name": {
+		"en_US": "FAQ"
+	},
+	"storageType": "default"
+}
