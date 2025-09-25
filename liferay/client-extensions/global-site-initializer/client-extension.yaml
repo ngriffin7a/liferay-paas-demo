@@ -1,7 +1,7 @@
 liferay-global-site-initializer:
     name: Liferay Global Site Initializer
     oAuthApplicationHeadlessServer: liferay-global-site-initializer-oauth-application-headless-server
-    siteExternalReferenceCode: c253faaf-2ac8-1518-941d-3ddfbf83aa35
+    siteExternalReferenceCode: L_GLOBAL
     siteName: Global
     type: siteInitializer
 liferay-global-site-initializer-oauth-application-headless-server:
