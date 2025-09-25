@@ -14,6 +14,8 @@
 	"personasFolderId": "33282",
 	"scheme": "https",
 	"port": "443",
+	"project": "lctfoo",
+	"environment": "prd",
 	"hostname": "webserver-lctfoo-prd.lfr.cloud",
 	"globalSiteId": 20123,
 	"globalSiteERC": "62643d80-2116-fb6f-5454-4fafe1f7a1a8"

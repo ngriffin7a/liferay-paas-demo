@@ -20,6 +20,8 @@ userPassword=$(jq -r '.userPassword' "$configFile")
 personasFolderId=$(jq -r '.personasFolderId' "$configFile")
 scheme=$(jq -r '.scheme' "$configFile")
 port=$(jq -r '.port' "$configFile")
+project=$(jq -r '.project' "$configFile")
+projectEnv=$(jq -r '.environment' "$configFile")
 hostname=$(jq -r '.hostname' "$configFile")
 
 # Output the variables (optional)
@@ -37,5 +39,7 @@ if [ "$1" = "print" ]; then
 	echo "Personas Folder ID: $ColorOn$personasFolderId$ColorOff"
 	echo "Scheme: $ColorOn$scheme$ColorOff"
 	echo "Port: $ColorOn$port$ColorOff"
+	echo "Project: $ColorOn$project$ColorOff"
+	echo "Environment: $ColorOn$projectEnv$ColorOff"
 	echo "Hostname: $ColorOn$hostname$ColorOff"
 fi
