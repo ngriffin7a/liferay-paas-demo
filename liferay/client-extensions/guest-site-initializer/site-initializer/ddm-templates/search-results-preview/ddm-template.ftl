@@ -101,7 +101,7 @@
 } />
 
 <#assign assetType = classNameMap[entry.getClassName()]!"unknown" />
-									<a href="#" class="preview-link" data-fullview="https://webserver-lctclarity-prd.lfr.cloud/web/clarity/ai-summary?assetType=${assetType}&assetTitle=${entry.getTitle()}">[AI Summary]</a>
+									<a href="#" class="preview-link" data-fullview="https://webserver-lctclarity-prd.lfr.cloud/web/clarity/ai-summary?assetType=${assetType}&assetTitle=${entry.getTitle()}&p_p_state=pop_up">[AI Summary]</a>
 							</div>
 
 							<div class="search-results-metadata">
