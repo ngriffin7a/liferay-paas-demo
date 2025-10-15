@@ -145,7 +145,7 @@ public class ChatController {
 					StringBuilder msg = new StringBuilder();
 					String title = searchResult.getTitle();
 					String typeName = searchResult.getType().name();
-					System.err.println("Search Result: type=\"" + typeName + "\" title=\"" + title + "\"");
+					log.debug("Search Result: type=\"" + typeName + "\" title=\"" + title + "\"");
 
 					if ((title != null) && !title.isBlank()) {
 						msg.append("INSTRUCTION; " + typeName + " title for inclusion in a reference:");
@@ -174,6 +174,8 @@ public class ChatController {
 							" text as a basis for responding to the keywords:");
 						msg.append(textContent);
 					}
+
+					log.debug("OpenAI message=" + msg.toString());
 
 					paramsBuilder.addMessage(ChatCompletionMessageParam.ofChatCompletionUserMessageParam(
 							ChatCompletionUserMessageParam.builder().role(ChatCompletionUserMessageParam.Role.USER)
