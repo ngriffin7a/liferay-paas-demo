@@ -41,7 +41,7 @@
                         roles: Array.from(chatWindow.children)
                             .filter(child => !child.classList.contains('busy'))
                             .map(child => child.classList.contains('assistant') ? 'assistant' : 'user'),
-                        blueprintERC: "${configuration.blueprintERC}"
+                        blueprintExternalReferenceCode: "${configuration.blueprintERC}"
                     }),
                 })
                 .then((response) => {

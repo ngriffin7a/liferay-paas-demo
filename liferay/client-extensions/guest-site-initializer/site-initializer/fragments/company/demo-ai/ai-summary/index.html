@@ -77,7 +77,7 @@
                 body: JSON.stringify({
                     messages: [instruction],
                     roles: ['user'],
-                    blueprintERC: "${configuration.blueprintERC}"
+                    blueprintExternalReferenceCode: "${configuration.blueprintERC}"
                 }),
             })
             .then((response) => {
@@ -103,7 +103,7 @@
     const assetTitle = getUrlParam('assetTitle');
 
     if (assetType && assetTitle) {
-        const instruction = "Summarize the " + assetType + " titled \"" + assetTitle + "\"";
+        const instruction = "Summarize the " + assetType + " titled " + assetTitle;
         sendInstruction(instruction);
     } else {
         console.warn('Missing URL parameter: assetType or assetTitle');
