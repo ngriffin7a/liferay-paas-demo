@@ -21,7 +21,9 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,16 +72,40 @@ public class SearchServiceImpl implements SearchService {
 	private LiferayHttpRequestFactory _liferayHttpRequestFactory;
 
 	private static String _downloadText(Jwt jwt, String url, int maxChars) throws IOException {
+
+		System.err.println("!@#$ _downloadText url=" + url);
+		System.err.println("!@#$ _downloadText maxChars=" + maxChars);
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
+
+		// Bearer token authentication
 		headers.setBearerAuth(jwt.getTokenValue());
 
+		// Build Basic Auth header manually
+		// String auth = "test@liferay.com:test";
+		// byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
+		// String authHeader = "Basic " + new String(encodedAuth);
+		// headers.set("Authorization", authHeader);
+
 		HttpEntity<String> entity = new HttpEntity<>(headers);
+		System.err.println("!@#$ entity=" + entity);
 		ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, byte[].class);
 
+		System.err.println("!@#$ response=" + response);
 		byte[] fileData = response.getBody();
 		if (fileData == null) {
 			throw new IOException("Failed to download file content from " + url);
+		}
+
+		String contentType = response.getHeaders().getContentType() != null
+				? response.getHeaders().getContentType().toString()
+				: "";
+
+		// If the content-type indicates plain text, skip Tika and return raw string
+		System.err.println("!@#$ contentType=" + contentType);
+
+		if (contentType.contains("text/plain")) {
+			return new String(fileData, StandardCharsets.UTF_8);
 		}
 
 		try (InputStream stream = new ByteArrayInputStream(fileData)) {
@@ -105,7 +131,6 @@ public class SearchServiceImpl implements SearchService {
 	public List<SearchResult> getSearchResults(Jwt jwt, String keywords, String blueprintExternalReferenceCode, String scope) throws IOException {
 		Map<String, String> urlParameters = new HashMap<>();
 
-		String search = URLEncoder.encode(keywords, "UTF-8");
 		System.err.println("-----------------------");
 		System.err.println("keywords=" + keywords);
 		System.err.println("urlParameters=");
@@ -113,33 +138,52 @@ public class SearchServiceImpl implements SearchService {
 
 		String url = UriComponentsBuilder
 			.fromUriString("/search/v1.0/search")
-			.queryParam("search", search)
-			.queryParam("scope", scope)
-			.queryParam("nestedFields", "embedded")
 			.queryParam("blueprintExternalReferenceCode", blueprintExternalReferenceCode)
+			// .queryParam("scope", scope)
+			.queryParam("nestedFields", "embedded")
+			.queryParam("search", keywords)
 			.toUriString();
 
 		System.err.println("url=" + url);
 		System.err.println("-----------------------");
 
+		boolean limitToFirstResult = keywords.toLowerCase().startsWith("summarize the");
+
 		return _getSearchResults(jwt,
 				_httpResponseFactory.getHttpResponseBody(
 					_liferayHttpRequestFactory.newLiferayGetRequest(url, jwt.getTokenValue())
-						));
+						), limitToFirstResult);
 	}
 
-	private Document _downloadDocument(Jwt jwt, String itemURL, String relativeContentURL, int maxChars) throws IOException {
+	private Document _downloadDocument(Jwt jwt, String itemURL, String contentURL, int maxChars) throws IOException {
 
-		String contentURL = _relative2AbsoluteURL(itemURL, relativeContentURL);
 
+		System.err.println("!@#$ contentURL=" + contentURL);
 		if (contentURL == null) {
+			System.err.println("!@#$ contentURL is null, returning empty Document");
 			return new Document();
 		}
 
-		return new Document(_downloadText(jwt, contentURL, maxChars), contentURL);
+		if (contentURL.contains("/o/headless-delivery/v1.0/documents")) {
+			// Extract the fileEntryId (the number after the last slash)
+			String fileEntryId = contentURL.substring(contentURL.lastIndexOf('/') + 1);
+
+			// Build the new URL
+			// NOTE: does not work because it probably isn't a JWT-ified URL
+			contentURL = contentURL.replaceAll("/o/headless-delivery/v1.0/documents/\\d+",
+					"/c/document_library/get_file?fileEntryId=" + fileEntryId);
+
+			System.err.println("!@#$ fixed the contentURL=" + contentURL);
+		}
+
+		System.err.println("!@#$ calling _downloadText");
+		String _downloadedText = _downloadText(jwt, contentURL, maxChars);
+
+		System.err.println("!@#$ _downloadedText=" + _downloadedText);
+		return new Document(_downloadedText, contentURL);
 	}
 
-	private List<SearchResult> _getSearchResults(Jwt jwt, String json) throws IOException {
+	private List<SearchResult> _getSearchResults(Jwt jwt, String json, boolean limitToFirstResult) throws IOException {
 		List<SearchResult> searchResults = new ArrayList<>();
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -147,21 +191,34 @@ public class SearchServiceImpl implements SearchService {
 			JsonNode rootNode = objectMapper.readTree(json);
 			JsonNode itemsJsonNode = rootNode.path("items");
 
-			System.err.println("itemsJsonNode=" + itemsJsonNode);
+			System.err.println("!@#$ itemsJsonNode=" + itemsJsonNode);
 			if (!itemsJsonNode.isArray()) {
 				System.err.println("No search results found.");
 				return searchResults;
 			}
-			System.err.println("itemsJsonNode.size()=" + itemsJsonNode.size());
+			System.err.println("!@#$ itemsJsonNode.size()=" + itemsJsonNode.size());
 
+			System.err.println("!@#$ limitToFirstResult=" + limitToFirstResult);
 			// 128_000 is the approximate upper bound of ChatGPT tokens for a single request
 			// 80_000 is a safe margin for model + leaving room for the system prompt
 			int remainingChars = 80_000;
 
 			for (JsonNode itemJsonNode : itemsJsonNode) {
 
-				if ((searchResults.size() == 3) || (remainingChars <= 1024)) {
+				int totalResults = searchResults.size();
 
+				System.err.println("!@#$ CUR totalResults=" + totalResults);
+				if ((limitToFirstResult && (totalResults == 1)) || (remainingChars <= 1024)) {
+
+					System.err.println("Limiting to first result only, not three results");
+
+					// Stop after 1 search results since it's a summary request
+					break;
+				}
+
+				if ((totalResults == 3) || (remainingChars <= 1024)) {
+
+					System.err.println("Limiting to first three results");
 					// Stop after 3 search results for now until relevance/score can be figured out better.
 					break;
 				}
@@ -172,6 +229,16 @@ public class SearchServiceImpl implements SearchService {
 				String itemURL = itemJsonNode.path("itemURL").asText();
 				JsonNode embeddedJsonNode = itemJsonNode.path("embedded");
 				SearchResult.Type type = _getType(embeddedJsonNode);
+				if ((embeddedJsonNode != null) && (embeddedJsonNode.size() > 0)) {
+					System.err.println("!@#$ embeddedJsonNode.size()=" + embeddedJsonNode.size());
+					type = _getType(embeddedJsonNode);
+				}
+				else {
+					String entryClassName = itemJsonNode.path("entryClassName").asText();
+					if ("com.liferay.document.library.kernel.model.DLFileEntry".equals(entryClassName)) {
+						type = SearchResult.Type.DOCUMENT;
+					}
+				}
 
 				String contentText = null;
 				String relativeContentURL = null;
@@ -231,9 +298,12 @@ public class SearchServiceImpl implements SearchService {
 						contentURL = _relative2AbsoluteURL(itemURL, relativeContentURL);
 					}
 					else {
+						String absoluteURL = itemURL;
 						relativeContentURL = embeddedJsonNode.path("contentUrl").asText();
-
-						Document document = _downloadDocument(jwt, itemURL, relativeContentURL, remainingChars);
+						if ((relativeContentURL != null) && !relativeContentURL.isBlank()) {
+							absoluteURL = _relative2AbsoluteURL(itemURL, relativeContentURL);
+						}
+						Document document = _downloadDocument(jwt, itemURL, absoluteURL, remainingChars);
 						contentText = document.getContentText();
 						contentURL = document.getURL();
 					}
@@ -244,7 +314,7 @@ public class SearchServiceImpl implements SearchService {
 
 				if (addSearchResult) {
 
-					System.err.println("Search Result: type=\"" + type.name() + "\" title=\"" + title + "\" description=\"" + description + "\"");
+					System.err.println("!@#$ Search Result: type=\"" + type.name() + "\" title=\"" + title + "\" description=\"" + description + "\"");
 
 					searchResults.add(new SearchResult(title, description, itemURL, contentText, contentURL, type));
 
@@ -254,9 +324,11 @@ public class SearchServiceImpl implements SearchService {
 
 		}
 		catch (JsonProcessingException jsonProcessingException) {
+			System.err.println("!@#$ Exception happened, gonna throw it: " + jsonProcessingException.getMessage());
 			throw new IOException(jsonProcessingException);
 		}
 
+		System.err.println("!@#$ returning searchResults, size=" + searchResults.size());
 		return searchResults;
 	}
 
@@ -286,6 +358,7 @@ public class SearchServiceImpl implements SearchService {
 			return SearchResult.Type.ARTICLE;
 		}
 
+		System.err.println("!@#$ embeddedJsonNode OTHER, value=" + embeddedJsonNode.toPrettyString());
 		return SearchResult.Type.OTHER;
 	}
 
