@@ -108,20 +108,29 @@ public class SearchServiceImpl implements SearchService {
 			return new String(fileData, StandardCharsets.UTF_8);
 		}
 
-		try (InputStream stream = new ByteArrayInputStream(fileData)) {
+		try (InputStream stream = new java.io.ByteArrayInputStream(fileData)) {
+
 			AutoDetectParser parser = new AutoDetectParser();
-			BodyContentHandler handler = new BodyContentHandler(maxChars);
+			// 0 or -1 => no limit; BodyContentHandler(maxChars) truncates at limit
+			BodyContentHandler handler = (maxChars > 0)
+					? new BodyContentHandler(maxChars)
+					: new BodyContentHandler(-1);
+
 			Metadata metadata = new Metadata();
 			ParseContext context = new ParseContext();
 
 			try {
 				parser.parse(stream, handler, metadata, context);
 			} catch (WriteLimitReachedException e) {
-				// Log or acknowledge the truncation
-				System.err.println("Text extraction was truncated at " + maxChars + " characters.");
+				System.err.println("Truncated at " + maxChars + " chars.");
 			}
 
-			return handler.toString(); // Partial text is still available
+			String text = handler.toString().trim();
+			if (text.isEmpty()) {
+				throw new RuntimeException("No text extracted. Ensure tika-parsers-standard-package is on the classpath.");
+			}
+			return text;
+
 		} catch (IOException | SAXException | TikaException e) {
 			throw new RuntimeException("Failed to parse file content", e);
 		}
