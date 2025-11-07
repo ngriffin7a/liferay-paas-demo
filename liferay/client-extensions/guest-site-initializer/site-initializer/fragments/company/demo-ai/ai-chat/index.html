@@ -1,0 +1,61 @@
+<div class="ai-chat [#if configuration.position == 'bottom-left']position-left[#else]position-right[/#if]">
+  <!-- Chat Toggle Button -->
+  <button class="chat-toggle-btn" aria-label="Toggle chat" style="background-color: #2563eb">
+    <svg class="chat-icon chat-open-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+    <svg class="chat-icon chat-close-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  </button>
+
+  <!-- Chat Window -->
+  <div class="chat-window [#if configuration.openByDefault]chat-open[/#if]" style="width: ${configuration.chatWindowWidth}px; height: ${configuration.chatWindowHeight}px;">
+    <!-- Chat Header -->
+    <div class="chat-header" style="background-color: #1e3a8a">
+      <div class="chat-header-content">
+        <div class="chat-header-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="5"></circle>
+            <path d="M20 21a8 8 0 1 0-16 0"></path>
+          </svg>
+        </div>
+        <div class="chat-header-text">
+          <h3 class="chat-title" data-lfr-editable-id="chat-title" data-lfr-editable-type="text">AI Assistant</h3>
+          <p class="chat-subtitle" data-lfr-editable-id="chat-subtitle" data-lfr-editable-type="text">Always here to help</p>
+        </div>
+      </div>
+      <button class="chat-minimize-btn" aria-label="Minimize chat">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Chat Body (Drop Zone Container) -->
+    <div class="chat-body">
+      <div class="chat-dropzone-wrapper">
+        <!-- Liferay Drop Zone for Chat App -->
+        <lfr-drop-zone></lfr-drop-zone>
+        
+        <!-- Placeholder message when drop zone is empty 
+        <div class="dropzone-placeholder">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            <circle cx="9" cy="10" r="1"></circle>
+            <circle cx="12" cy="10" r="1"></circle>
+            <circle cx="15" cy="10" r="1"></circle>
+          </svg>
+          <p class="placeholder-title" data-lfr-editable-id="placeholder-title" data-lfr-editable-type="text">Drop your AI Chat App here</p>
+          <p class="placeholder-description" data-lfr-editable-id="placeholder-description" data-lfr-editable-type="text">Drag and drop your chat application widget into this zone</p>
+        </div> -->
+      </div>
+    </div>
+
+    <!-- Chat Footer (Optional) -->
+    <div class="chat-footer">
+      <p class="footer-text" data-lfr-editable-id="footer-text" data-lfr-editable-type="text">Powered by AI</p>
+    </div>
+  </div>
+</div>
