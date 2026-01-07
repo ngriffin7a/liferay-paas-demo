@@ -39,37 +39,12 @@ public class LiferayHttpRequestFactoryImpl implements LiferayHttpRequestFactory 
 	@Value("${liferay.headless.api.base.url}")
 	private String liferayHeadlessApiBaseURL;
 
-	/*
 	@Override
 	public HttpRequest newLiferayGetRequest(String apiPath, String authToken) throws IOException {
 
 		try {
 			return HttpRequest.newBuilder().uri(new URI(liferayHeadlessApiBaseURL + apiPath)).setHeader("Authorization",
 					"Bearer " + authToken).setHeader("Content-Type", "application/json").GET().build();
-		}
-		catch (URISyntaxException uriSyntaxException) {
-			uriSyntaxException.printStackTrace();
-			throw new IOException(uriSyntaxException);
-		}
-	}
-	 */
-
-	@Override
-	public HttpRequest newLiferayGetRequest(String apiPath, String authToken) throws IOException {
-
-		try {
-			// NOTE: Update with actuall email/password of the Administrator
-			String auth = "test@liferay.com:test";
-			String encodedAuth = Base64.getEncoder()
-					.encodeToString(auth.getBytes(StandardCharsets.UTF_8));
-			String authHeader = "Basic " + encodedAuth;
-
-			return HttpRequest.newBuilder()
-					.uri(new URI(liferayHeadlessApiBaseURL + apiPath))
-					.setHeader("Authorization", authHeader)
-					.setHeader("Content-Type", "application/json")
-					.GET()
-					.build();
 		}
 		catch (URISyntaxException uriSyntaxException) {
 			uriSyntaxException.printStackTrace();
