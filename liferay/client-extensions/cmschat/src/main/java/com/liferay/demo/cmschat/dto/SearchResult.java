@@ -24,7 +24,17 @@ public class SearchResult {
 	 * @author  Neil Griffin
 	 */
 	public enum Type {
-		ARTICLE, BLOG, DOCUMENT, FOLDER, PAGE, USER, OTHER
+		ARTICLE("Article"), BLOG("Blog"), CMS2_BLOG("Blog"), DOCUMENT("Document"), FOLDER("Folder"), PAGE("Page"), USER("User"), OTHER("Other");
+
+		private final String title;
+
+		Type(String title) {
+			this.title = title;
+		}
+
+		public String getTitle() {
+			return title;
+		}
 	}
 
 	private String _description;

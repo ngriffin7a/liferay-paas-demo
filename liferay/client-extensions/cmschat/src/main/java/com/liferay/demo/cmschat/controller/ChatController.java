@@ -144,11 +144,11 @@ public class ChatController {
 				for (SearchResult searchResult : searchResults) {
 					StringBuilder msg = new StringBuilder();
 					String title = searchResult.getTitle();
-					String typeName = searchResult.getType().name();
-					log.debug("Search Result: type=\"" + typeName + "\" title=\"" + title + "\"");
+					String typeTitle = searchResult.getType().getTitle();
+					log.debug("Search Result: type=\"" + typeTitle + "\" title=\"" + title + "\"");
 
 					if ((title != null) && !title.isBlank()) {
-						msg.append("INSTRUCTION; " + typeName + " title for inclusion in a reference:");
+						msg.append("INSTRUCTION; " + typeTitle + " title for inclusion in a reference:");
 						msg.append("\n");
 						msg.append(title);
 						msg.append("\n---\n");
@@ -157,7 +157,7 @@ public class ChatController {
 					String contentURL = searchResult.getContentURL();
 
 					if ((contentURL != null) && !contentURL.isBlank()) {
-						msg.append("INSTRUCTION; " + typeName + " URL for inclusion in a reference:");
+						msg.append("INSTRUCTION; " + typeTitle + " URL for inclusion in a reference:");
 						msg.append("\n");
 						msg.append(contentURL);
 						msg.append("\n---\n");
@@ -170,7 +170,7 @@ public class ChatController {
 						msg.append("\n");
 						msg.append(message);
 						msg.append("\n---\n");
-						msg.append("INSTRUCTION; Use the following " + typeName +
+						msg.append("INSTRUCTION; Use the following " + typeTitle +
 							" text as a basis for responding to the keywords:");
 						msg.append(textContent);
 					}

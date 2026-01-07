@@ -20,10 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +35,7 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.sax.BodyContentHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -70,6 +69,12 @@ public class SearchServiceImpl implements SearchService {
 
 	@Autowired
 	private LiferayHttpRequestFactory _liferayHttpRequestFactory;
+
+	@Value("${cms2.blog.display.page.template.id}")
+	private String _cms2BlogDisplayPageTemplateId;
+
+	@Value("${cms2.display.page.base.url}")
+	private String _cms2DisplayPageBaseURL;
 
 	private static String _downloadText(Jwt jwt, String url, int maxChars) throws IOException {
 
@@ -164,7 +169,7 @@ public class SearchServiceImpl implements SearchService {
 						), limitToFirstResult);
 	}
 
-	private Document _downloadDocument(Jwt jwt, String itemURL, String contentURL, int maxChars) throws IOException {
+	private Document _downloadDocument(Jwt jwt, String contentURL, int maxChars) throws IOException {
 
 
 		System.err.println("!@#$ contentURL=" + contentURL);
@@ -236,6 +241,9 @@ public class SearchServiceImpl implements SearchService {
 				String description = itemJsonNode.path("description").asText();
 				String contentURL = null;
 				String itemURL = itemJsonNode.path("itemURL").asText();
+				if ((itemURL != null) && (itemURL.trim().length() == 0)) {
+					itemURL = _cms2DisplayPageBaseURL;
+				}
 				JsonNode embeddedJsonNode = itemJsonNode.path("embedded");
 				SearchResult.Type type = _getType(embeddedJsonNode);
 				if ((embeddedJsonNode != null) && (embeddedJsonNode.size() > 0)) {
@@ -296,6 +304,19 @@ public class SearchServiceImpl implements SearchService {
 					break;
 				}
 
+				case CMS2_BLOG: {
+					addSearchResult = true;
+					String rawHtml = embeddedJsonNode.path("contentRawText").asText();
+					String text = _html2Text(rawHtml);
+					contentText = text.length() > remainingChars ? text.substring(0, remainingChars) : text;
+					relativeContentURL = "/e/blog/" + _cms2BlogDisplayPageTemplateId + "/" + embeddedJsonNode.path("id").asText();
+					System.err.println("!@#$ HINT relativeContentURL=" + relativeContentURL);
+					contentURL = _relative2AbsoluteURL(itemURL, relativeContentURL);
+					System.err.println("!@#$ HINT contentURL=" + contentURL);
+
+					break;
+				}
+
 				case DOCUMENT: {
 					addSearchResult = true;
 
@@ -312,7 +333,7 @@ public class SearchServiceImpl implements SearchService {
 						if ((relativeContentURL != null) && !relativeContentURL.isBlank()) {
 							absoluteURL = _relative2AbsoluteURL(itemURL, relativeContentURL);
 						}
-						Document document = _downloadDocument(jwt, itemURL, absoluteURL, remainingChars);
+						Document document = _downloadDocument(jwt, absoluteURL, remainingChars);
 						contentText = document.getContentText();
 						contentURL = document.getURL();
 					}
@@ -323,7 +344,7 @@ public class SearchServiceImpl implements SearchService {
 
 				if (addSearchResult) {
 
-					System.err.println("!@#$ Search Result: type=\"" + type.name() + "\" title=\"" + title + "\" description=\"" + description + "\"");
+					System.err.println("!@#$ Search Result: type=\"" + type.name() + "\" title=\"" + title + "\" description=\"" + description + "\" contentURL=\"" + contentURL + "\"" );
 
 					searchResults.add(new SearchResult(title, description, itemURL, contentText, contentURL, type));
 
@@ -361,6 +382,10 @@ public class SearchServiceImpl implements SearchService {
 
 		if (embeddedJsonNode.has("headline")) {
 			return SearchResult.Type.BLOG;
+		}
+
+		if (embeddedJsonNode.has("subtitle")) {
+			return SearchResult.Type.CMS2_BLOG;
 		}
 
 		if (embeddedJsonNode.has("contentStructureId")) {
