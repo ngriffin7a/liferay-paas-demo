@@ -16,12 +16,7 @@
 		"httpGet": {
 			"path": "/ready",
 			"port": 58081
-		},
-      "initialDelaySeconds": 100,
-      "periodSeconds": 10,
-      "timeoutSeconds": 4,
-      "failureThreshold": 3,
-      "successThreshold": 1
+		}
 	},
 	"loadBalancer": {
 		"targetPort": 58081
@@ -30,12 +25,7 @@
 		"httpGet": {
 			"path": "/ready",
 			"port": 58081
-		},
-      "initialDelaySeconds": 120,
-      "periodSeconds": 10,
-      "timeoutSeconds": 4,
-      "failureThreshold": 3,
-      "successThreshold": 1
+		}
 	},
 	"scale": 1
 }
