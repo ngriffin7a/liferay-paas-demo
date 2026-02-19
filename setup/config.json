@@ -12,12 +12,14 @@
 	},
 	"userPassword": "UserPassword",
 	"personasFolderId": "33282",
+	"imagesScopeKey" : "Images",
+	"assetLibraryPersonasFolderId": "35721",
+	"spacePersonasFolderId": "35759",
 	"scheme": "https",
 	"port": "443",
 	"project": "lctfoo",
 	"environment": "prd",
 	"hostname": "webserver-lctfoo-prd.lfr.cloud",
 	"globalSiteId": 20123,
-	"globalSiteERC": "62643d80-2116-fb6f-5454-4fafe1f7a1a8"
 	"globalSiteERC": "L_GLOBAL"
 }

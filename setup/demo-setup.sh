@@ -1,4 +1,4 @@
-##!/bin/bash
+#!/bin/bash
 
 # Check if stepNumber is provided as an argument
 if [ -z "$1" ]; then
@@ -9,7 +9,7 @@ fi
 stepNumber=$1
 
 case $stepNumber in
-  5)
+  6)
 	source ./load-config.sh print
     ;;
   *)
@@ -28,6 +28,30 @@ push_deploy_restart_wait() {
 	echo "        DEPLOY the build to PRD"
 	echo "        RESTART the Liferay Service after it warms up (might be necessary for site initializers to work)"
 	echo "        WAIT for the restart to finish"
+}
+
+add_view_download_permissions() {
+    local cMSBasicDocumentId="$1"
+
+    permissionsPayload='[
+      {
+        "roleName": "Guest",
+        "actionIds": ["VIEW", "DOWNLOAD_FILE"]
+      }
+    ]'
+
+    permissionsUrl="$baseURL/o/cms/basic-documents/$cMSBasicDocumentId/permissions"
+
+    response=$(
+      curl -sS -X PUT \
+        -u "$adminEmail:$adminPassword" \
+        -H "Content-Type: application/json" \
+        "$permissionsUrl" \
+        -d "$permissionsPayload"
+    )
+
+    echo "Updated permissions for CMSBasicDocumentId: $cMSBasicDocumentId"
+    echo "$response"
 }
 
 case $stepNumber in
@@ -52,28 +76,35 @@ case $stepNumber in
     echo "        Under Instance Settings > AI Creator > OpenAI:"
     echo "        PASTE \"API Key\""
     echo "        CLICK \"Save\""
-    ;;
-
-  3)
-    echo "Step $stepNumber: NAVIGATE TO App Menu > Control Panel > Security > Password Policies > Default Password Policy"
+	echo " "
+    echo "        NAVIGATE TO App Menu > Control Panel > Security > Password Policies > Default Password Policy"
 	echo "        DISABLE \"PASSWORD CHANGES > Change Required\""
 	echo "        SAVE the password policy"
     ;;
 
+  3)
+    echo "Step $stepNumber: Under Instance Settings  > Feature Flags > Release"
+	echo "        ENABLE \"LPD-32050\" (Enhancements to Object Entry Localization)"
+	echo "        ENABLE \"LPD-34594\" (Root Object Definitions)"
+	echo " "
+    echo "        Under Instance Settings  > Feature Flags > Beta"
+	echo "        ENABLE \"LPD-17564\" (CMS 2.0)"
+    ;;
+
   4)
-	echo "Step $stepNumber: CREATE an Asset Library named ${ColorOn}Images${ColorOff}"
+	echo "Step $stepNumber: CREATE an Asset Library named ${ColorOn}Images Asset Library${ColorOff}"
 	echo "        SHARE the Asset Library with the ${ColorOn}Liferay DXP${ColorOff} site and MAKE-UNSEARCHABLE"
     ;;
 
   5)
-	echo "Step $stepNumber: Under the Asset Library Documents and Media, create a folder named ${ColorOn}Personas${ColorOff} and determine the ${ColorOn}personasFolderId${ColorOff}\n"
+	echo "Step $stepNumber: Under the Asset Library Documents and Media, create a folder named ${ColorOn}Personas${ColorOff} and determine the ${ColorOn}assetLibraryPersonasFolderId${ColorOff}\n"
 	# As of release 2024.q3.3 the headless REST API does not have an endpoint that supports creation of an asset library
 	#curl -X POST -u $adminEmail:$adminPassword -H "Content-Type: application/json" "$baseURL/o/headless-asset-library/v1.0/asset-libraries" -d '{"name": "Images"}'
 	#curl -X POST -u $adminEmail:$adminPassword -H "Content-Type: application/json" "$baseURL/o/headless-asset-library/v1.0/asset-libraries" -d '{"name": "Shared"}'
     ;;
 
   6)
-    echo "Step $stepNumber: Edit config.json and FIX the ${ColorOn}values${ColorOff} ^^^ above ^^^ (including the ${ColorOn}personasFolderId${ColorOff} from the previous step"
+    echo "Step $stepNumber: Edit config.json and FIX the ${ColorOn}values${ColorOff} ^^^ above ^^^ (including the ${ColorOn}assetLibraryPersonasFolderId${ColorOff} from the previous step"
     ;;
 
   7)
@@ -85,68 +116,122 @@ case $stepNumber in
   8)
     echo "Step $stepNumber: Uploading administrator PROFILE image"
 	curl -X POST -u $adminEmail:$adminPassword -H "Content-Type: multipart/form-data" -F "image=@$adminProfileImagePath" "$baseURL/o/headless-admin-user/v1.0/user-accounts/$adminUserId/image"
-    ;;
-
-  9)
+	echo " "
     echo "Step $stepNumber: Uploading administrator PERSONA image to the Personas folder"
-	response=$(curl -S -X POST -u "$adminEmail:$adminPassword" -H "Content-Type: multipart/form-data" -F "file=@$adminProfileImagePath" "$baseURL/o/headless-delivery/v1.0/document-folders/$personasFolderId/documents")
+	response=$(curl -S -X POST -u "$adminEmail:$adminPassword" -H "Content-Type: multipart/form-data" -F "file=@$adminProfileImagePath" "$baseURL/o/headless-delivery/v1.0/document-folders/$assetLibraryPersonasFolderId/documents")
 	documentId=$(echo "$response" | jq -r '.id')
 	curl -X PUT -u $adminEmail:$adminPassword -H "Content-Type: application/json" "$baseURL/o/headless-delivery/v1.0/documents/$documentId/permissions" -d '[{"actionIds":["VIEW","DOWNLOAD"],"roleName":"Guest"}]'
     ;;
 
-  10)
+  9)
 	echo "Step $stepNumber: Clone the GitHub repo locally, and determine the clone's name (e.g. ${ColorOn}$project${ColorOff})"
     ;;
 
-  11)
+  10)
     echo "Step $stepNumber: EDIT liferay/LCP.json in the clone (the ${ColorOn}memory${ColorOff} one is close to the top, ${ColorOn}LIFERAY_JVM_OPTS${ColorOff} close to the bottom)"
     echo "         \"${ColorOn}memory${ColorOff}\": ${ColorOn}16384${ColorOff},"
-	echo "         \"${ColorOn}LIFERAY_JVM_OPTS${ColorOff}\": \"${ColorOn}-Xms8192m -Xmx12288m -XX:MaxMetaspaceSize=3072m --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.http=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.https=ALL-UNNAMED --add-opens=java.base/sun.util.calendar=ALL-UNNAMED --add-opens=jdk.zipfs/jdk.nio.zipfs=ALL-UNNAMED${ColorOff}\""
+	echo "         \"${ColorOn}LIFERAY_JVM_OPTS${ColorOff}\": \"${ColorOn}-Xms8192m -Xmx12288m -XX:MaxMetaspaceSize=3072m${ColorOff}\""
 	echo " "
+	echo "        NOTE: The following is a workaround for LPD-73649, until it is fixed in Liferay PaaS:"
+	echo " "
+	echo "        Add the following immediately before (or after) the LIFERAY_JVM_OPTS environment variable:"
+	echo " "
+	echo "        \"${ColorOn}LCP_DXP_AGENT_DOWNLOAD_URL${ColorOff}\": \"${ColorOn}https://cdn.liferay.cloud/liferay-dxp/liferay-dxp-agent-jakarta-LPD-73649.jar${ColorOff}\","
 	echo "         STAGE and COMMIT"
     ;;
 
-  12)
+  11)
 	echo "Step $stepNumber: COPY ../liferay/configs/${ColorOn}common${ColorOff}/portal-common.properties to $project/liferay/configs/${ColorOn}common${ColorOff}"
     echo "         COPY ../liferay/configs/${ColorOn}prd${ColorOff}/portal-ext.properties to $project/liferay/configs/${ColorOn}prd${ColorOff}"
 	echo "         STAGE and COMMIT"
     ;;
 
+  12)
+	push_deploy_restart_wait 12;
+    ;;
+
   13)
-    echo "Step $stepNumber: COPY ../liferay/configs/common/osgi to the $project/liferay/configs/common"
-	echo "         IF NECESSARY, CREATE $project/liferay/configs/common/tomcat/css/fonts.css"
-	echo "         DOWNLOAD FONTS TO $project/liferay/configs/common/tomcat/fonts"
-	echo "         STAGE and COMMIT"
+    echo "Step $stepNumber: This step is a placholder for the future. Skip for now"
+	#echo "Step $stepNumber: Deploy the ${ColorOn}global${ColorOff}-site-initializer by doing the following:"
+	#echo "         pushd ../liferay/client-extensions/global-site-initializer"
+	#echo "         blade gw clean build"
+	#echo "         lcp deploy --extension dist/global-site-initializer.zip -p $project-$projectEnv"
+	#echo "         popd"
     ;;
 
   14)
-	echo "Step $stepNumber: Create the client-extensions folder in the clone (e.g. $project/liferay/${ColorOn}client-extensions${ColorOff})"
-	echo "         COPY ../liferay/client-extensions/global-site-initializer to $project/liferay/client-extensions"
-    echo "         cd $project/liferay/client-extensions/global-site-initializer"
-	echo "         EDIT ${ColorOn}siteExternalReferenceCode${ColorOff} in client-extension.yaml (UNLESS IT IS ${ColorOn}L_GLOBAL${ColorOff} WHICH STARTED WITH 2024.Q3)${ColorOff}"
-	echo "         cd global-site-initializer"
-	echo "         blade gw clean build"
-	echo "         lcp deploy --extension dist/global-site-initializer.zip -p $project-$projectEnv"
+    echo "Step $stepNumber: Create a CMS 2.0 Space named \"Images\""
+	echo " "
+	echo "           CLICK \"View all Files\" in the space"
+	echo "           CREATE a folder named \"${ColorOn}Personas${ColorOff}\" in the space"
+	echo "           CLICK on the Personas folder and observe the folder ID as the last integer in the URL, e.g. /web/cms/e/view-folder/29649/${ColorOn}37766${ColorOff}"
+	echo "           EDIT config.json and set the value of ${ColorOn}spacePersonasFolderId${ColorOff} accordingly"
     ;;
 
   15)
-	push_deploy_restart_wait 14;
-    ;;
+	echo "Step $stepNumber: Uploading administrator PERSONA image to the Personas folder"
+
+	#cmsBaseRoot="$baseURL/o/c/images"
+	cmsBaseRoot="$baseURL/o/cms/basic-documents"
+	createUrl="$cmsBaseRoot/scopes/$imagesScopeKey"
+
+	title="$adminGivenName $adminFamilyName"
+	fileName="$(basename "$adminProfileImagePath")"
+
+	# Single-line base64 (BSD/macOS base64 wraps by default)
+	fileBase64="$(base64 < "$adminProfileImagePath" | tr -d '\n\r')"
+
+	createPayload='{
+  	"title": "'"$title"'",
+  	"title_i18n": { "en_US": "'"$title"'" },
+  	"objectEntryFolderId": '"$spacePersonasFolderId"',
+  	"file": {
+    	"name": "'"$fileName"'",
+    	"fileBase64": "'"$fileBase64"'"
+  	},
+  	"file_i18n": {
+    	"en_US": {
+      	"name": "'"$fileName"'",
+      	"fileBase64": "'"$fileBase64"'"
+    	}
+  	}
+	}'
+
+	echo "URL: $createUrl"
+
+	response=$(
+  	curl -sS -X POST \
+    	-u "$adminEmail:$adminPassword" \
+    	-H "Content-Type: application/json" \
+    	"$createUrl" \
+    	-d "$createPayload"
+	)
+
+	imageId=$(echo "$response" | jq -r '.id')
+	echo "Created CMS imageId: $imageId"
+
+	echo $response
+
+	add_view_download_permissions "$imageId"
+
+	;;
 
   16)
-    echo "Step $stepNumber: OBSERVE: The value of the ${ColorOn}ID${ColorOff} of the Press Release structure (needed for the ${ColorOn}subTypeId${ColorOff} in the next step)"
+    echo "Step $stepNumber: This step is a placholder for the future. Skip for now"
+    #echo "Step $stepNumber: OBSERVE: The value of the ${ColorOn}ID${ColorOff} of the Press Release structure (needed for the ${ColorOn}subTypeId${ColorOff} in the next step)"
     ;;
 
   17)
-    echo "Step $stepNumber: COPY ../liferay/client-extensions/guest-site-initializer to the clone"
-    echo "         EDIT the value of ${ColorOn}subtypeId${ColorOff} in liferay/client-extensions/guest-site-initializer/site-initializer/layout-page-templates/display-page-templates/press-release-dpt/display-page-template.json"
-	echo "         cd guest-site-initializer"
+	echo "Step $stepNumber: Deploy the ${ColorOn}guest${ColorOff}-site-initializer by doing the following:"
+	echo "         pushd ../liferay/client-extensions/guest-site-initializer"
+    echo "         EDIT the value of ${ColorOn}subtypeId${ColorOff} in site-initializer/layout-page-templates/display-page-templates/press-release-dpt/display-page-template.json"
 	echo "         blade gw clean build"
 	echo "         lcp deploy --extension dist/guest-site-initializer.zip -p $project-$projectEnv"
+	echo "         popd"
     ;;
 
   18)
-	echo "Step $stepNumber: Make sure that the Guest site initializer worked by verifying tha it has, for example, the External Video Shortcut DPT"
+	echo "Step $stepNumber: Make sure that the Guest site initializer worked by verifying that it has, for example, the External Video Shortcut DPT"
     ;;
 
   19)
