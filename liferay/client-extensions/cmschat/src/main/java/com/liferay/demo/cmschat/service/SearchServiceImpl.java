@@ -73,6 +73,9 @@ public class SearchServiceImpl implements SearchService {
 	@Value("${cms2.blog.display.page.template.id}")
 	private String _cms2BlogDisplayPageTemplateId;
 
+	@Value("${cms2.press.release.display.page.template.id}")
+	private String _cms2PressReleaseDisplayPageTemplateId;
+
 	@Value("${cms2.display.page.base.url}")
 	private String _cms2DisplayPageBaseURL;
 
@@ -317,6 +320,18 @@ public class SearchServiceImpl implements SearchService {
 					break;
 				}
 
+				case CMS2_Press_Release: {
+					addSearchResult = true;
+					String rawHtml = embeddedJsonNode.path("contentRawText").asText();
+					String text = _html2Text(rawHtml);
+					contentText = text.length() > remainingChars ? text.substring(0, remainingChars) : text;
+					System.err.println("!@#$ HINT relativeContentURL=" + relativeContentURL);
+					relativeContentURL = "/e/press-release/" + _cms2PressReleaseDisplayPageTemplateId + "/" + embeddedJsonNode.path("id").asText();
+					contentURL = _relative2AbsoluteURL(itemURL, relativeContentURL);
+					System.err.println("!@#$ HINT contentURL=" + contentURL);
+					break;
+				}
+
 				case DOCUMENT: {
 					addSearchResult = true;
 
@@ -340,6 +355,52 @@ public class SearchServiceImpl implements SearchService {
 
 					break;
 				}
+
+				case CMS2_DOCUMENT: {
+					addSearchResult = true;
+					JsonNode fileJsonNode = embeddedJsonNode.get("file");
+					if (fileJsonNode != null) {
+						JsonNode linkJsonNode = fileJsonNode.get("link");
+						if (linkJsonNode != null) {
+							JsonNode hrefJsonNode = linkJsonNode.get("href");
+							if (hrefJsonNode != null) {
+								String href = hrefJsonNode.asText();
+
+								System.err.println("!@#$ file href=" + href);
+								int downloadIndex = href.indexOf("download=true");
+
+								if (downloadIndex != -1) {
+									System.err.println("!@#$ file href contains download=true");
+									href = href.substring(
+										0, downloadIndex + "download=true".length());
+									System.err.println("!@#$ trimmed file href=" + href);
+								}
+
+								String absoluteURL = _relative2AbsoluteURL(itemURL, href);
+
+								System.err.println("!@#$ absouluteURL=" + absoluteURL);
+
+								Document document = _downloadDocument(
+									jwt, absoluteURL, remainingChars);
+
+								contentText = document.getContentText();
+								contentURL = document.getURL();
+							}
+							else {
+								System.err.println("!@#$ embeddedJsonNode.get('href') is null");
+							}
+						}
+						else {
+							System.err.println("!@#$ embeddedJsonNode.get('link') is null");
+						}
+					}
+					else {
+						System.err.println("!@#$ embeddedJsonNode.get('file') is null");
+					}
+
+					break;
+				}
+
 				}
 
 				if (addSearchResult) {
@@ -385,7 +446,24 @@ public class SearchServiceImpl implements SearchService {
 		}
 
 		if (embeddedJsonNode.has("subtitle")) {
+			if (embeddedJsonNode.has("actions")) {
+				JsonNode actions = embeddedJsonNode.get("actions");
+				if (actions.has("get-by-scope")) {
+					JsonNode getByScope = actions.get("get-by-scope");
+					if (getByScope.has("href")) {
+						String href = getByScope.get("href").asText();
+						if (href.contains("/pressreleases/")) {
+							return SearchResult.Type.CMS2_Press_Release;
+						}
+					}
+				}
+			}
+			System.err.println("!@#$ embeddedJsonNode CMS2_BLOG, value=" + embeddedJsonNode.toPrettyString());
 			return SearchResult.Type.CMS2_BLOG;
+		}
+
+		if (embeddedJsonNode.has("file")) {
+			return SearchResult.Type.CMS2_DOCUMENT;
 		}
 
 		if (embeddedJsonNode.has("contentStructureId")) {

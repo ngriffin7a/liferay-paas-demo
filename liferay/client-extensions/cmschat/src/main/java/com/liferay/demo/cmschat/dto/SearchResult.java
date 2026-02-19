@@ -24,7 +24,16 @@ public class SearchResult {
 	 * @author  Neil Griffin
 	 */
 	public enum Type {
-		ARTICLE("Article"), BLOG("Blog"), CMS2_BLOG("Blog"), DOCUMENT("Document"), FOLDER("Folder"), PAGE("Page"), USER("User"), OTHER("Other");
+		ARTICLE("Article"),
+		BLOG("Blog"),
+		CMS2_BLOG("Blog"),
+		DOCUMENT("Document"),
+		CMS2_DOCUMENT("CMS2Document"),
+		FOLDER("Folder"),
+		PAGE("Page"),
+		CMS2_Press_Release("Press Release"),
+		USER("User"),
+		OTHER("Other");
 
 		private final String title;
 
